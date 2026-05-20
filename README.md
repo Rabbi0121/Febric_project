@@ -4,7 +4,7 @@ This repository implements the Fabric learning project scope and adds the reques
 
 1. Weather data as an additional dataset in the same medallion pattern.
 2. External periodic sync of enriched weather data into a separate time-series DB (InfluxDB).
-3. Grafana dashboard for weather time-series analysis.
+3. Grafana dashboard for cross-domain analysis (weather + taxi + economy + air quality).
 4. Great Expectations quality checks with user-friendly trigger through Telegram bot.
 
 ## What Is Implemented
@@ -15,7 +15,9 @@ This repository implements the Fabric learning project scope and adds the reques
   - `openaq`
   - `economy` (World Bank GDP + ECB FX)
   - `weather` (Open-Meteo)
-- External sync job from Gold weather artifacts to InfluxDB.
+- External sync jobs from Gold artifacts to InfluxDB:
+  - weather (`weather_enriched`)
+  - taxi/economy/air-quality domain facts
 - Grafana provisioning and starter dashboard.
 - Great Expectations checks with markdown/json report output.
 - Bot commands to run checks on demand.
@@ -50,6 +52,7 @@ Optional stack for weather analytics:
 ```bash
 docker compose up -d influxdb grafana
 ./scripts/run_weather_sync.sh --once
+./scripts/run_domain_sync.sh
 ```
 
 Notes:
@@ -72,6 +75,7 @@ For details, see:
 - `docs/extensibility.md`
 - `docs/fabric_completion_checklist.md`
 - `docs/operations.md`
+- `docs/expected_outcomes_mapping.md`
 - `docs/data_dictionary.md`
 - `docs/lineage.md`
 - `docs/governance_policies.md`

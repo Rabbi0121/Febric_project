@@ -45,8 +45,8 @@ datasets:
     latitude: 40.7128
     longitude: -74.0060
     timezone: America/New_York
-    past_days: 1
-    forecast_days: 3
+    past_days: 7
+    forecast_days: 5
     hourly_metrics:
       - temperature_2m
       - relative_humidity_2m

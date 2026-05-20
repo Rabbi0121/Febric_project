@@ -1,0 +1,38 @@
+datasets:
+  taxi:
+    source_parquet_path: data/lakehouse/gold/nyc_taxi/fact_taxi_daily.parquet
+    measurement: taxi_daily
+    time_column: pickup_date
+    tags:
+      - PULocationID
+    fields:
+      - trip_count
+      - passenger_total
+      - revenue_usd
+      - avg_trip_distance_miles
+
+  economy:
+    source_parquet_path: data/lakehouse/gold/economy/fact_fx_gdp_daily.parquet
+    measurement: economy_daily
+    time_column: fx_date
+    tags:
+      - country
+      - year
+    fields:
+      - usd_to_eur_rate
+      - gdp_usd
+      - gdp_eur_approx
+
+  openaq:
+    source_parquet_path: data/lakehouse/gold/openaq/fact_air_quality_daily.parquet
+    measurement: air_quality_daily
+    time_column: date
+    tags:
+      - city
+      - parameter
+    fields:
+      - avg_pollutant_value
+      - max_pollutant_value
+      - measurement_count
+
+batch_size: 1000

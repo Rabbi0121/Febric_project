@@ -81,7 +81,7 @@
       },
       "targets": [
         {
-          "query": "from(bucket: \"weather_timeseries\") |> range(start: -30d) |> filter(fn: (r) => r._measurement == \"weather_enriched\" and r._field == \"temperature_c\") |> filter(fn: (r) => r.city == \"${city}\") |> last()",
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -180d) |> filter(fn: (r) => r._measurement == \"weather_enriched\" and r._field == \"temperature_c\") |> filter(fn: (r) => r.city == \"${city}\") |> last()",
           "refId": "A"
         }
       ],
@@ -147,7 +147,7 @@
       },
       "targets": [
         {
-          "query": "from(bucket: \"weather_timeseries\") |> range(start: -30d) |> filter(fn: (r) => r._measurement == \"weather_enriched\" and r._field == \"apparent_temperature_c\") |> filter(fn: (r) => r.city == \"${city}\") |> last()",
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -180d) |> filter(fn: (r) => r._measurement == \"weather_enriched\" and r._field == \"apparent_temperature_c\") |> filter(fn: (r) => r.city == \"${city}\") |> last()",
           "refId": "A"
         }
       ],
@@ -192,7 +192,7 @@
       },
       "targets": [
         {
-          "query": "from(bucket: \"weather_timeseries\") |> range(start: -30d) |> filter(fn: (r) => r._measurement == \"weather_enriched\" and r._field == \"precipitation_mm\") |> filter(fn: (r) => r.city == \"${city}\") |> aggregateWindow(every: 24h, fn: sum, createEmpty: false) |> last()",
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -180d) |> filter(fn: (r) => r._measurement == \"weather_enriched\" and r._field == \"precipitation_mm\") |> filter(fn: (r) => r.city == \"${city}\") |> aggregateWindow(every: 24h, fn: sum, createEmpty: false) |> last()",
           "refId": "A"
         }
       ],
@@ -237,7 +237,7 @@
       },
       "targets": [
         {
-          "query": "from(bucket: \"weather_timeseries\") |> range(start: -30d) |> filter(fn: (r) => r._measurement == \"weather_enriched\" and r._field == \"wind_speed_kmh\") |> filter(fn: (r) => r.city == \"${city}\") |> aggregateWindow(every: 24h, fn: max, createEmpty: false) |> last()",
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -180d) |> filter(fn: (r) => r._measurement == \"weather_enriched\" and r._field == \"wind_speed_kmh\") |> filter(fn: (r) => r.city == \"${city}\") |> aggregateWindow(every: 24h, fn: max, createEmpty: false) |> last()",
           "refId": "A"
         }
       ],
@@ -474,12 +474,478 @@
       },
       "targets": [
         {
-          "query": "from(bucket: \"weather_timeseries\") |> range(start: -30d) |> filter(fn: (r) => r._measurement == \"weather_enriched\") |> filter(fn: (r) => r.city == \"${city}\") |> filter(fn: (r) => r._field == \"temperature_c\" or r._field == \"apparent_temperature_c\" or r._field == \"humidity_pct\" or r._field == \"cloud_cover_pct\" or r._field == \"precipitation_mm\" or r._field == \"wind_speed_kmh\" or r._field == \"comfort_index\") |> pivot(rowKey:[\"_time\",\"city\"], columnKey:[\"_field\"], valueColumn:\"_value\") |> keep(columns: [\"_time\",\"city\",\"temperature_c\",\"apparent_temperature_c\",\"humidity_pct\",\"cloud_cover_pct\",\"precipitation_mm\",\"wind_speed_kmh\",\"comfort_index\"]) |> sort(columns: [\"_time\"], desc: true) |> limit(n: 72)",
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -180d) |> filter(fn: (r) => r._measurement == \"weather_enriched\") |> filter(fn: (r) => r.city == \"${city}\") |> filter(fn: (r) => r._field == \"temperature_c\" or r._field == \"apparent_temperature_c\" or r._field == \"humidity_pct\" or r._field == \"cloud_cover_pct\" or r._field == \"precipitation_mm\" or r._field == \"wind_speed_kmh\" or r._field == \"comfort_index\") |> pivot(rowKey:[\"_time\",\"city\"], columnKey:[\"_field\"], valueColumn:\"_value\") |> keep(columns: [\"_time\",\"city\",\"temperature_c\",\"apparent_temperature_c\",\"humidity_pct\",\"cloud_cover_pct\",\"precipitation_mm\",\"wind_speed_kmh\",\"comfort_index\"]) |> sort(columns: [\"_time\"], desc: true) |> limit(n: 72)",
           "refId": "A"
         }
       ],
       "title": "Hourly Observation Table (72h)",
       "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "weather-influx"
+      },
+      "description": "Sum of all trips across the synced taxi dataset.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 31
+      },
+      "id": 10,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -5y) |> filter(fn: (r) => r._measurement == \"taxi_daily\" and r._field == \"trip_count\") |> aggregateWindow(every: 1d, fn: sum, createEmpty: false)",
+          "refId": "A"
+        }
+      ],
+      "title": "Total Trips (Dataset)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "weather-influx"
+      },
+      "description": "Total taxi revenue in USD across the synced dataset.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 31
+      },
+      "id": 11,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -5y) |> filter(fn: (r) => r._measurement == \"taxi_daily\" and r._field == \"revenue_usd\") |> aggregateWindow(every: 1d, fn: sum, createEmpty: false)",
+          "refId": "A"
+        }
+      ],
+      "title": "Total Revenue USD (Dataset)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "weather-influx"
+      },
+      "description": "Latest available USD to EUR exchange rate.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 12,
+        "y": 31
+      },
+      "id": 12,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -5y) |> filter(fn: (r) => r._measurement == \"economy_daily\" and r._field == \"usd_to_eur_rate\") |> last()",
+          "refId": "A"
+        }
+      ],
+      "title": "Latest USD/EUR FX",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "weather-influx"
+      },
+      "description": "Latest available GDP value from World Bank feed.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 18,
+        "y": 31
+      },
+      "id": 13,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -5y) |> filter(fn: (r) => r._measurement == \"economy_daily\" and r._field == \"gdp_usd\") |> last()",
+          "refId": "A"
+        }
+      ],
+      "title": "Latest GDP USD",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "weather-influx"
+      },
+      "description": "Daily total trips and revenue from NYC taxi dataset.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 3,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 36
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -5y) |> filter(fn: (r) => r._measurement == \"taxi_daily\" and r._field == \"trip_count\") |> aggregateWindow(every: 1d, fn: sum, createEmpty: false)",
+          "refId": "A"
+        },
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -5y) |> filter(fn: (r) => r._measurement == \"taxi_daily\" and r._field == \"revenue_usd\") |> aggregateWindow(every: 1d, fn: sum, createEmpty: false)",
+          "refId": "B"
+        }
+      ],
+      "title": "Daily Trips vs Revenue (Taxi)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "weather-influx"
+      },
+      "description": "USD/EUR rate trend over time.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 3,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 36
+      },
+      "id": 15,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -5y) |> filter(fn: (r) => r._measurement == \"economy_daily\" and r._field == \"usd_to_eur_rate\") |> aggregateWindow(every: 1d, fn: mean, createEmpty: false)",
+          "refId": "A"
+        }
+      ],
+      "title": "USD/EUR FX Trend",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "weather-influx"
+      },
+      "description": "Daily PM2.5 average concentration from OpenAQ.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 3,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 44
+      },
+      "id": 16,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -10y) |> filter(fn: (r) => r._measurement == \"air_quality_daily\" and r._field == \"avg_pollutant_value\") |> filter(fn: (r) => r.parameter == \"pm25\") |> aggregateWindow(every: 1d, fn: mean, createEmpty: false)",
+          "refId": "A"
+        }
+      ],
+      "title": "PM2.5 Daily Average (OpenAQ)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "weather-influx"
+      },
+      "description": "GDP trend from World Bank (repeated across available FX dates for analysis).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "currencyUSD",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "stepAfter",
+            "lineWidth": 2,
+            "pointSize": 3,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 44
+      },
+      "id": 17,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -10y) |> filter(fn: (r) => r._measurement == \"economy_daily\" and r._field == \"gdp_usd\") |> aggregateWindow(every: 30d, fn: last, createEmpty: false)",
+          "refId": "A"
+        }
+      ],
+      "title": "GDP USD Trend",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "weather-influx"
+      },
+      "description": "Daily taxi revenue converted to EUR using USD/EUR FX rate.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "currencyEUR",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 3,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 52
+      },
+      "id": 18,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "taxi = from(bucket: \"weather_timeseries\") |> range(start: -5y) |> filter(fn: (r) => r._measurement == \"taxi_daily\" and r._field == \"revenue_usd\") |> aggregateWindow(every: 1d, fn: sum, createEmpty: false) |> keep(columns: [\"_time\", \"_value\"]) |> rename(columns: {_value: \"revenue_usd\"})\nfx = from(bucket: \"weather_timeseries\") |> range(start: -5y) |> filter(fn: (r) => r._measurement == \"economy_daily\" and r._field == \"usd_to_eur_rate\") |> aggregateWindow(every: 1d, fn: last, createEmpty: false) |> keep(columns: [\"_time\", \"_value\"]) |> rename(columns: {_value: \"usd_to_eur_rate\"})\njoin(tables: {taxi: taxi, fx: fx}, on: [\"_time\"]) |> map(fn: (r) => ({ r with _value: float(v: r.revenue_usd) * float(v: r.usd_to_eur_rate), _field: \"revenue_eur\" })) |> keep(columns: [\"_time\", \"_value\", \"_field\"])"
+        }
+      ],
+      "title": "Revenue in EUR (Derived from FX)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "weather-influx"
+      },
+      "description": "Unified view panel to compare mobility volume and PM2.5 pollution pattern.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 3,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 52
+      },
+      "id": 19,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -10y) |> filter(fn: (r) => r._measurement == \"taxi_daily\" and r._field == \"trip_count\") |> aggregateWindow(every: 1d, fn: sum, createEmpty: false)"
+        },
+        {
+          "refId": "B",
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -10y) |> filter(fn: (r) => r._measurement == \"air_quality_daily\" and r._field == \"avg_pollutant_value\") |> filter(fn: (r) => r.parameter == \"pm25\") |> aggregateWindow(every: 1d, fn: mean, createEmpty: false)"
+        }
+      ],
+      "title": "Trips vs PM2.5 (Unified View)",
+      "type": "timeseries"
     }
   ],
   "refresh": "5m",
@@ -489,7 +955,10 @@
     "weather",
     "fabric",
     "timeseries",
-    "analytics"
+    "analytics",
+    "mobility",
+    "economy",
+    "air-quality"
   ],
   "templating": {
     "list": [
@@ -503,7 +972,7 @@
           "type": "influxdb",
           "uid": "weather-influx"
         },
-        "definition": "import \"influxdata/influxdb/schema\" schema.tagValues(bucket: \"weather_timeseries\", tag: \"city\", predicate: (r) => r._measurement == \"weather_enriched\", start: -90d)",
+        "definition": "import \"influxdata/influxdb/schema\" schema.tagValues(bucket: \"weather_timeseries\", tag: \"city\", predicate: (r) => r._measurement == \"weather_enriched\", start: -365d)",
         "includeAll": false,
         "label": "City",
         "multi": false,
@@ -515,7 +984,7 @@
             "value": "New York"
           }
         ],
-        "query": "import \"influxdata/influxdb/schema\" schema.tagValues(bucket: \"weather_timeseries\", tag: \"city\", predicate: (r) => r._measurement == \"weather_enriched\", start: -90d)",
+        "query": "import \"influxdata/influxdb/schema\" schema.tagValues(bucket: \"weather_timeseries\", tag: \"city\", predicate: (r) => r._measurement == \"weather_enriched\", start: -365d)",
         "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
@@ -530,8 +999,8 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Fabric Weather Analytics",
+  "title": "Fabric Unified Mobility, Air Quality & Economy",
   "uid": "fabric-weather-overview",
-  "version": 2,
+  "version": 4,
   "weekStart": ""
 }

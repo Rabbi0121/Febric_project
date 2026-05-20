@@ -44,6 +44,7 @@ Run selected datasets only:
 ```bash
 docker compose up -d influxdb grafana
 ./scripts/run_weather_sync.sh --once
+./scripts/run_domain_sync.sh
 ```
 
 If Grafana shows `connection refused` to `localhost:8086`, set
@@ -56,6 +57,18 @@ Long-running sync loop:
 ```
 
 By default, weather sync refreshes the weather dataset first, then syncs newly enriched rows to InfluxDB.
+
+To sync domain metrics used by cross-domain dashboard panels (taxi trips/revenue, GDP/FX, air quality):
+
+```bash
+./scripts/run_domain_sync.sh
+```
+
+Sync selected datasets only:
+
+```bash
+./scripts/run_domain_sync.sh --datasets taxi,economy
+```
 
 Skip refresh if you want to sync only existing Gold weather artifacts:
 
