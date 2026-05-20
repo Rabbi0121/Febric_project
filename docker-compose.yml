@@ -1,0 +1,52 @@
+services:
+  influxdb:
+    image: influxdb:2.7
+    ports:
+      - "8086:8086"
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: admin12345
+      DOCKER_INFLUXDB_INIT_ORG: ${INFLUXDB_ORG:-fabric-project}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUXDB_BUCKET:-weather_timeseries}
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUXDB_TOKEN:-replace_with_real_token}
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin12345
+      INFLUXDB_URL: ${GRAFANA_INFLUXDB_URL:-http://influxdb:8086}
+      INFLUXDB_ORG: ${INFLUXDB_ORG:-fabric-project}
+      INFLUXDB_BUCKET: ${INFLUXDB_BUCKET:-weather_timeseries}
+      INFLUXDB_TOKEN: ${INFLUXDB_TOKEN:-replace_with_real_token}
+    depends_on:
+      - influxdb
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./dashboards/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./dashboards/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./dashboards/grafana/dashboards:/etc/grafana/provisioning/dashboards/json
+
+  weather-sync:
+    build: .
+    environment:
+      DATA_LAKE_ROOT: ${DATA_LAKE_ROOT:-data/lakehouse}
+      WEATHER_SYNC_INTERVAL_MINUTES: ${WEATHER_SYNC_INTERVAL_MINUTES:-30}
+      INFLUXDB_URL: ${WEATHER_SYNC_INFLUXDB_URL:-http://influxdb:8086}
+      INFLUXDB_TOKEN: ${INFLUXDB_TOKEN:-replace_with_real_token}
+      INFLUXDB_ORG: ${INFLUXDB_ORG:-fabric-project}
+      INFLUXDB_BUCKET: ${INFLUXDB_BUCKET:-weather_timeseries}
+    depends_on:
+      - influxdb
+    volumes:
+      - ./:/app
+    command: ["python", "-m", "fabric_project.integrations.weather_sync_job"]
+
+volumes:
+  influxdb_data:
+  grafana_data:

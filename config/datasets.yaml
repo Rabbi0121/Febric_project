@@ -1,0 +1,57 @@
+default_order:
+  - nyc_taxi
+  - openaq
+  - economy
+  - weather
+
+datasets:
+  nyc_taxi:
+    enabled: true
+    source_urls:
+      - https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2025-01.parquet
+    max_rows: 250000
+
+  openaq:
+    enabled: true
+    required: true
+    allow_cached_fallback: true
+    endpoint_base: https://api.openaq.org/v3
+    api_key_env: OPENAQ_API_KEY
+    city: New York
+    latitude: 40.7128
+    longitude: -74.0060
+    radius_meters: 25000
+    location_limit: 5
+    location_pages: 1
+    sensor_limit_per_location: 20
+    limit: 500
+    pages: 2
+    parameter_names: [pm25, no2, o3]
+
+  economy:
+    enabled: true
+    required: true
+    allow_cached_fallback: true
+    world_bank_country: USA
+    world_bank_indicator: NY.GDP.MKTP.CD
+    ecb_fx_url: https://data-api.ecb.europa.eu/service/data/EXR/D.USD.EUR.SP00.A?format=csvdata
+
+  weather:
+    enabled: true
+    required: true
+    allow_cached_fallback: true
+    endpoint: https://api.open-meteo.com/v1/forecast
+    city_name: New York
+    latitude: 40.7128
+    longitude: -74.0060
+    timezone: America/New_York
+    past_days: 1
+    forecast_days: 3
+    hourly_metrics:
+      - temperature_2m
+      - relative_humidity_2m
+      - apparent_temperature
+      - precipitation
+      - cloud_cover
+      - wind_speed_10m
+      - weather_code

@@ -1,0 +1,21 @@
+.git
+.gitignore
+.venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.DS_Store
+
+# Local runtime artifacts
+reports/
+spark-warehouse/
+
+# Large local data artifacts (mounted at runtime when needed)
+data/
+
+# Secrets/local environment files
+.env
+.env.*

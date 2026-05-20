@@ -1,0 +1,93 @@
+allow_missing_tables: false
+
+tables:
+  - name: weather_enriched
+    path: data/lakehouse/silver/weather/weather_enriched.parquet
+    expectations:
+      - type: not_null
+        column: timestamp
+      - type: not_null
+        column: city
+      - type: between
+        column: humidity_pct
+        min: 0
+        max: 100
+        mostly: 0.995
+      - type: between
+        column: wind_speed_kmh
+        min: 0
+        max: 250
+        mostly: 0.995
+      - type: quantile_between
+        column: temperature_c
+        quantiles: [0.1, 0.5, 0.9]
+        value_ranges:
+          - [-25, 20]
+          - [-10, 35]
+          - [5, 45]
+
+  - name: fact_weather_daily
+    path: data/lakehouse/gold/weather/fact_weather_daily.parquet
+    expectations:
+      - type: not_null
+        column: date
+      - type: not_null
+        column: city
+      - type: between
+        column: total_precipitation_mm
+        min: 0
+        max: 1000
+        mostly: 1.0
+
+  - name: fact_taxi_daily
+    path: data/lakehouse/gold/nyc_taxi/fact_taxi_daily.parquet
+    expectations:
+      - type: not_null
+        column: pickup_date
+      - type: between
+        column: trip_count
+        min: 0
+        max: 500000
+        mostly: 1.0
+      - type: between
+        column: revenue_usd
+        min: 0
+        max: 100000000
+        mostly: 1.0
+
+  - name: fact_air_quality_daily
+    path: data/lakehouse/gold/openaq/fact_air_quality_daily.parquet
+    expectations:
+      - type: not_null
+        column: date
+      - type: not_null
+        column: parameter
+      - type: in_set
+        column: parameter
+        value_set: [pm25, no2, o3]
+        mostly: 0.95
+      - type: between
+        column: avg_pollutant_value
+        min: -5
+        max: 1000
+        mostly: 0.995
+      - type: mean_between
+        column: avg_pollutant_value
+        min: 0
+        max: 300
+
+  - name: fact_fx_gdp_daily
+    path: data/lakehouse/gold/economy/fact_fx_gdp_daily.parquet
+    expectations:
+      - type: not_null
+        column: fx_date
+      - type: between
+        column: usd_to_eur_rate
+        min: 0
+        max: 3
+        mostly: 1.0
+      - type: between
+        column: gdp_usd
+        min: 1000000000
+        max: 100000000000000
+        mostly: 0.9

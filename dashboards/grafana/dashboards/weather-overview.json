@@ -1,0 +1,537 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "weather-influx"
+      },
+      "description": "Most recent observed air temperature.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 10
+              },
+              {
+                "color": "orange",
+                "value": 28
+              },
+              {
+                "color": "red",
+                "value": 35
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -30d) |> filter(fn: (r) => r._measurement == \"weather_enriched\" and r._field == \"temperature_c\") |> filter(fn: (r) => r.city == \"${city}\") |> last()",
+          "refId": "A"
+        }
+      ],
+      "title": "Current Temperature",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "weather-influx"
+      },
+      "description": "Most recent apparent temperature.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 10
+              },
+              {
+                "color": "orange",
+                "value": 30
+              },
+              {
+                "color": "red",
+                "value": 37
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -30d) |> filter(fn: (r) => r._measurement == \"weather_enriched\" and r._field == \"apparent_temperature_c\") |> filter(fn: (r) => r.city == \"${city}\") |> last()",
+          "refId": "A"
+        }
+      ],
+      "title": "Feels Like",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "weather-influx"
+      },
+      "description": "Accumulated precipitation across the last 24 hours.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "mm"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -30d) |> filter(fn: (r) => r._measurement == \"weather_enriched\" and r._field == \"precipitation_mm\") |> filter(fn: (r) => r.city == \"${city}\") |> aggregateWindow(every: 24h, fn: sum, createEmpty: false) |> last()",
+          "refId": "A"
+        }
+      ],
+      "title": "Rain (Last 24h)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "weather-influx"
+      },
+      "description": "Highest recorded wind speed across the last 24 hours.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "km/h"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "max"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -30d) |> filter(fn: (r) => r._measurement == \"weather_enriched\" and r._field == \"wind_speed_kmh\") |> filter(fn: (r) => r.city == \"${city}\") |> aggregateWindow(every: 24h, fn: max, createEmpty: false) |> last()",
+          "refId": "A"
+        }
+      ],
+      "title": "Max Wind (24h)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "weather-influx"
+      },
+      "description": "Hourly average trend of observed and apparent temperature.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 3,
+            "showPoints": "never"
+          },
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 5
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"weather_enriched\" and r._field == \"temperature_c\") |> filter(fn: (r) => r.city == \"${city}\") |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)",
+          "refId": "A"
+        },
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"weather_enriched\" and r._field == \"apparent_temperature_c\") |> filter(fn: (r) => r.city == \"${city}\") |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)",
+          "refId": "B"
+        }
+      ],
+      "title": "Temperature vs Feels Like",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "weather-influx"
+      },
+      "description": "Humidity and cloud cover profile by hour.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 3,
+            "showPoints": "never"
+          },
+          "unit": "humidity"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 5
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"weather_enriched\" and r._field == \"humidity_pct\") |> filter(fn: (r) => r.city == \"${city}\") |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)",
+          "refId": "A"
+        },
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"weather_enriched\" and r._field == \"cloud_cover_pct\") |> filter(fn: (r) => r.city == \"${city}\") |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)",
+          "refId": "B"
+        }
+      ],
+      "title": "Humidity vs Cloud Cover",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "weather-influx"
+      },
+      "description": "Precipitation by hour for the selected window.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "bars",
+            "lineWidth": 1,
+            "pointSize": 3,
+            "showPoints": "never"
+          },
+          "unit": "mm"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 13
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"weather_enriched\" and r._field == \"precipitation_mm\") |> filter(fn: (r) => r.city == \"${city}\") |> aggregateWindow(every: 1h, fn: sum, createEmpty: false)",
+          "refId": "A"
+        }
+      ],
+      "title": "Hourly Precipitation",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "weather-influx"
+      },
+      "description": "Comfort index trend from enriched weather logic.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 3,
+            "showPoints": "never"
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 13
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "targets": [
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: v.timeRangeStart, stop: v.timeRangeStop) |> filter(fn: (r) => r._measurement == \"weather_enriched\" and r._field == \"comfort_index\") |> filter(fn: (r) => r.city == \"${city}\") |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)",
+          "refId": "A"
+        }
+      ],
+      "title": "Comfort Index",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "weather-influx"
+      },
+      "description": "Latest detailed observations in tabular form.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 21
+      },
+      "id": 9,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "query": "from(bucket: \"weather_timeseries\") |> range(start: -30d) |> filter(fn: (r) => r._measurement == \"weather_enriched\") |> filter(fn: (r) => r.city == \"${city}\") |> filter(fn: (r) => r._field == \"temperature_c\" or r._field == \"apparent_temperature_c\" or r._field == \"humidity_pct\" or r._field == \"cloud_cover_pct\" or r._field == \"precipitation_mm\" or r._field == \"wind_speed_kmh\" or r._field == \"comfort_index\") |> pivot(rowKey:[\"_time\",\"city\"], columnKey:[\"_field\"], valueColumn:\"_value\") |> keep(columns: [\"_time\",\"city\",\"temperature_c\",\"apparent_temperature_c\",\"humidity_pct\",\"cloud_cover_pct\",\"precipitation_mm\",\"wind_speed_kmh\",\"comfort_index\"]) |> sort(columns: [\"_time\"], desc: true) |> limit(n: 72)",
+          "refId": "A"
+        }
+      ],
+      "title": "Hourly Observation Table (72h)",
+      "type": "table"
+    }
+  ],
+  "refresh": "5m",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": [
+    "weather",
+    "fabric",
+    "timeseries",
+    "analytics"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": "New York",
+          "value": "New York"
+        },
+        "datasource": {
+          "type": "influxdb",
+          "uid": "weather-influx"
+        },
+        "definition": "import \"influxdata/influxdb/schema\" schema.tagValues(bucket: \"weather_timeseries\", tag: \"city\", predicate: (r) => r._measurement == \"weather_enriched\", start: -90d)",
+        "includeAll": false,
+        "label": "City",
+        "multi": false,
+        "name": "city",
+        "options": [
+          {
+            "selected": true,
+            "text": "New York",
+            "value": "New York"
+          }
+        ],
+        "query": "import \"influxdata/influxdb/schema\" schema.tagValues(bucket: \"weather_timeseries\", tag: \"city\", predicate: (r) => r._measurement == \"weather_enriched\", start: -90d)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-30d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Fabric Weather Analytics",
+  "uid": "fabric-weather-overview",
+  "version": 2,
+  "weekStart": ""
+}

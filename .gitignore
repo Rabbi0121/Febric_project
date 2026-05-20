@@ -1,0 +1,30 @@
+# Python cache/build artifacts
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.mypy_cache/
+
+# Virtual environment
+.venv/
+
+# Local OS/editor files
+.DS_Store
+.idea/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Runtime outputs
+reports/
+spark-warehouse/
+.state/
+
+# Spark/metadata sidecar artifacts
+*.crc
+._*
+
+# Raw large source files (keep local, do not version)
+data/lakehouse/bronze/nyc_taxi/*.parquet

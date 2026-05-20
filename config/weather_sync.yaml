@@ -1,0 +1,22 @@
+source_parquet_path: data/lakehouse/gold/weather/fact_weather_hourly.parquet
+measurement: weather_enriched
+time_column: timestamp
+refresh_weather_before_sync: true
+pipeline_config_path: config/datasets.yaml
+weather_dataset_name: weather
+tags:
+  - city
+  - timezone
+fields:
+  - temperature_c
+  - apparent_temperature_c
+  - humidity_pct
+  - cloud_cover_pct
+  - precipitation_mm
+  - wind_speed_kmh
+  - comfort_index
+  - weather_code
+  - is_raining
+  - weather_label
+state_file: .state/weather_sync_state.json
+schedule_minutes: 30
